@@ -61,6 +61,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import *
 from .serializers import *
 from naver.classify import is_receipt
+from .naverAPI import image_NAVER_AI
 
 # POST
 @csrf_exempt
@@ -68,9 +69,9 @@ def save_receipt(requests):
     # 영수증 큰 거 하나 저장
     # request.FILES[''] 으로 사진을 받고
     # request.POST[''] 로 매개변수를 받는다.
-    img_file = requests.FILES['img']
-
-    result = is_receipt(img_file)
+    # img_file = requests.FILES['img']
+    # result = is_receipt(img_file)
+    result = True
     # 사진 처리한 결과가 거짓이면 false를 return
     if not result:
         data = {
@@ -78,6 +79,26 @@ def save_receipt(requests):
         }
         return JsonResponse(data)
     else:
+        img_base64 = requests.POST['imgBase64']
+        result = image_NAVER_AI(img_base64)
+        en = result[0]
+        ko = result[1]
+        result = {
+            '장소': {
+                'en': en.get('place'),
+                'ko': ko.get('장소'),
+            },
+            '총계': ko.get('총'),
+            '픔목': {
+                1 : {
+                    'en' : '',
+                    'ko' : '',
+                    'price': '',
+                }
+            }
+        }
+        print('arrive')
+        # embed()
         # 사진 처리한 결과가 참이면 OCR과 파파고를 돌려서 결과를 얻는다.
         # 나온 결과를 보내준다.
         data = {
@@ -104,7 +125,6 @@ def get_schedule(request, pk):
     schedule = Schedule.objects.all().filter(pk=pk)
     serializer = ScheduleDetailSerializer(schedule, many=True)
     # 여기에 해당하는 모든 영수증을 가져온 뒤, 거기에 해당하는 모든 상세 항목을 가져오자
-    embed()
     return Response(serializer.data)
 
 
