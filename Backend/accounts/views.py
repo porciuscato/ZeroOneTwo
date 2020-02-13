@@ -66,18 +66,33 @@ from .serializers import *
 @csrf_exempt
 def save_receipt(requests):
     # 영수증 큰 거 하나 저장
-    data = {
-        'name': 'hi', 
-        'id':'id'
-     }
-     # 이걸로 
-    return JsonResponse(data)
+    # request.FILES[''] 으로 사진을 받고
+    # request.POST[''] 로 매개변수를 받는다.
+    result = False
+    # 사진 처리한 결과가 거짓이면 false를 return
+    if not result:
+        data = {
+            'result': False
+        }
+        return JsonResponse(data)
+    else:
+        # 사진 처리한 결과가 참이면 OCR과 파파고를 돌려서 결과를 얻는다.
+        # 나온 결과를 보내준다.
+        data = {
+            'name': 'hi', 
+            'id':'id'
+        }
+        # 보내주기 전에 영수증을 저장하고 그 영수증의 pk 값을 보내준다.
+        return JsonResponse(data)
 
 
 # POST
 @csrf_exempt
 def save_expenditure(requests):
     # 상세 항목 저장
+    # 항목 하나하나 날라오면 그걸 저장
+    # 근데 만약 해당하는 객체가 없으면 만들어야 함
+    # 하나하나를 저장해준다.
     pass
 
 
