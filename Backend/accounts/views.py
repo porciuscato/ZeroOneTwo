@@ -84,20 +84,17 @@ def save_expenditure(requests):
 # GET
 @api_view(('GET',))
 def get_schedule(request, pk):
-    # 해당 스케줄을 모두 보내준다.
     schedule = Schedule.objects.all().filter(pk=pk)
     serializer = ScheduleDetailSerializer(schedule, many=True)
-    # embed()
+    embed()
     return Response(serializer.data)
 
 
 # GET
 @api_view(('GET',))
 def get_receipts(requests, pk):
-    # 손님이 요청 보내면 모든 영수증을 다 보내준다.
     receipt = Receipt.objects.all().filter(pk=pk)
     serializer = ReceiptDetialSerializer(receipt, many=True)
-    # embed()
     return Response(serializer.data)
 
 

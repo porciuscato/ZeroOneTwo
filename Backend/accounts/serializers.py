@@ -48,16 +48,18 @@ class ScheduleSerializer(serializers.ModelSerializer):
         fields = ('id', 'schedule_name', )
 
 
-class ReceiptSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Receipt
-        fields = ('id', 'schedule_name', 'place_origin', 'place_trans', 'address_origin', 'address_trans', 'date', 'country', 'total',)
-
-
 class ExpenditureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expenditure
         fields = ('id', 'receipt', 'item_origin', 'item_trans', 'price',)
+
+
+class ReceiptSerializer(serializers.ModelSerializer):
+    expenditure_set = ExpenditureSerializer(many=True)
+    class Meta:
+        model = Receipt
+        fields = ('id', 'schedule_name', 'place_origin', 'place_trans', 'address_origin', 'address_trans', 'date', 'country', 'total',) + ('expenditure_set',)
+
 
 
 class ExchangeRatesSerializer(serializers.ModelSerializer):

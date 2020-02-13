@@ -91,6 +91,7 @@ from rest_framework.decorators import api_view
 from accounts.forms import imageForm
 from IPython import embed
 from django.views.decorators.csrf import csrf_exempt
+from accounts.models import ExchangeRates
 
 
 @csrf_exempt
@@ -106,3 +107,27 @@ def image_check(request):
     else:
         context = {'result': 'checking'}
         return JsonResponse(context)
+
+
+def exchange(request):
+    import urllib.request
+    import requests
+    import json
+    import datetime
+
+    exchange_SECRET_KEY="CQJZGTj2RAQYrW61ldyW2PYU4MPhBzKM"
+
+    for i in range(0, 1):
+        right = str(datetime.datetime.now() - datetime.timedelta(days=i))
+        day = right[0:4] + right[5:7] + right[8:10]
+        url = 'https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=CQJZGTj2RAQYrW61ldyW2PYU4MPhBzKM&searchdate={}&data=AP01'.format(day)
+        exchange = requests.get(url).json()
+        for info in exchange:
+            if info['cur_unit'] == 'USD':
+                # DB에 저장
+                unit = ExchangeRates.objects.create(
+                    select_date = '{}-{}-{}'.format(day[0:4], day[4:6], day[6:8]),
+                    usa = float(info['ttb'].replace(',','')),
+                    jpa = 10,
+                )
+                unit.save()

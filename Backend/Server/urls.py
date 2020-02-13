@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('naver/', include('naver.urls')),
+    
     path('docs/', (schema_view.with_ui('redoc')), name='api_docs'),
     path('swagger/', (schema_view.with_ui('swagger')), name='api_swagger')
  ]
