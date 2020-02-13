@@ -12,32 +12,41 @@ class User(AbstractUser):
 
 class Schedule(models.Model):
     schedule_name = models.CharField(max_length=40)
-    user = models.ForeignKey(User, on_delete=(models.CASCADE))
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.schedule_name
 
 
 class Receipt(models.Model):
-    schedule_name = models.ForeignKey(Schedule, on_delete=(models.CASCADE))
+    schedule_name = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     place_origin = models.CharField(max_length=50, blank=True, null=True)
     place_trans = models.CharField(max_length=50, blank=True, null=True)
     address_origin = models.CharField(max_length=100, blank=True, null=True)
     address_trans = models.CharField(max_length=100, blank=True, null=True)
-    date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
+    date = models.DateTimeField(auto_now=True, blank=True, null=True)
     country = models.CharField(max_length=20)
-    total = models.FloatField()
+    exchange = models.FloatField(blank=True, null=True)
+    total = models.FloatField(blank=True, null=True)
+
+    def __str__(self):
+        return self.place_origin
 
 
 class Expenditure(models.Model):
-    receipt = models.ForeignKey(Receipt, on_delete=(models.CASCADE))
-    schedule_name = models.ForeignKey(Schedule, on_delete=(models.CASCADE))
-    specific_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
-    specific_place = models.CharField(max_length=50)
+    receipt = models.ForeignKey(Receipt, on_delete=models.CASCADE)
     item_origin = models.CharField(max_length=50, blank=True, null=True)
     item_trans = models.CharField(max_length=50, blank=True, null=True)
     price = models.FloatField()
-    exchange = models.FloatField()
+
+    def __str__(self):
+        return self.item_origin
 
 
 class ExchangeRates(models.Model):
     select_date = models.DateField(primary_key=True)
     usa = models.FloatField(blank=True, null=True)
-    japan = models.FloatField(blank=True, null=True)
+    jpa = models.FloatField(blank=True, null=True)
+
+    def __str__(self):
+        return 'exchange rate'

@@ -96,6 +96,8 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def image_check(request):
     if request.method == 'POST':
+        # 사진이 들어온 건 request.FILES['param']  : param은 형이 보내주는 이름
+        # 정보는 request.POST[''] : param은 형이 보내주는 이름
         context = {
             'result': True
         }
