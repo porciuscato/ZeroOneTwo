@@ -52,7 +52,14 @@ const BaseAppBar = ({
   rightClick,
 }) => {
   return (
-    <StyledAppBar color="inherit" elevation={0} position="sticky">
+    <StyledAppBar
+      color="inherit"
+      elevation={0}
+      position="sticky"
+      style={{
+        background: 'linear-gradient(to bottom, #4ac8d9, #4fdbc2)',
+      }}
+    >
       <Toolbar disableGutters={true}>
         <CenterGrid item xs={2}>
           <ItemContainer
@@ -63,7 +70,7 @@ const BaseAppBar = ({
           />
         </CenterGrid>
         <Grid item xs={8}>
-          <Typography variant="h6" align={align}>
+          <Typography variant="h6" align={align} style={{ color: '#f2f5f8' }}>
             {text}
           </Typography>
         </Grid>
