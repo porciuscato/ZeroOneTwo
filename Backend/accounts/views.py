@@ -60,7 +60,7 @@ from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
 from .serializers import *
-
+from naver.classify import is_receipt
 
 # POST
 @csrf_exempt
@@ -68,7 +68,9 @@ def save_receipt(requests):
     # 영수증 큰 거 하나 저장
     # request.FILES[''] 으로 사진을 받고
     # request.POST[''] 로 매개변수를 받는다.
-    result = False
+    img_file = requests.FILES['img']
+
+    result = is_receipt(img_file)
     # 사진 처리한 결과가 거짓이면 false를 return
     if not result:
         data = {

@@ -55,11 +55,13 @@ torch.manual_seed(777)
 if device == 'cuda':
     torch.cuda.manual_seed_all(777)
 
-def is_receipt():
+def is_receipt(img_file):
     model_v2 = CNN().to(device)
     model_v2.load_state_dict(torch.load('./static/model_v2.pth'))
 
-    img = Image.open("./static/imgs/3.png")
+    img = Image.open(img_file)
+    
+    # img = Image.open("./static/imgs/3.png")
     # png to jpg
     img = img.convert('RGB')
 
@@ -76,4 +78,4 @@ def is_receipt():
 
     return value
 
-print(is_receipt())
+# print(is_receipt())
