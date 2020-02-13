@@ -114,3 +114,8 @@ def get_receipts(requests, pk):
     return Response(serializer.data)
 
 
+@api_view(('GET',))
+def get_schedules(requests):
+    data = Schedule.objects.all()
+    serializer = ScheduleSerializer(data, many=True)
+    return Response(serializer.data)

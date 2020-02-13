@@ -16,4 +16,5 @@ urlpatterns = [
     path('v1/receipt/', views.save_receipt), # 영수증 하나 저장
     path('v1/receipts/<int:pk>/', views.get_receipts), # 영수증 전체 가져오기
     path('v1/schedule/<int:pk>/', views.get_schedule),
+    path('v1/schedules/', views.get_schedules),
 ]
