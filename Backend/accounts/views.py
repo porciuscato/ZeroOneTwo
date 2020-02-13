@@ -86,6 +86,7 @@ def save_expenditure(requests):
 def get_schedule(request, pk):
     schedule = Schedule.objects.all().filter(pk=pk)
     serializer = ScheduleDetailSerializer(schedule, many=True)
+    # 여기에 해당하는 모든 영수증을 가져온 뒤, 거기에 해당하는 모든 상세 항목을 가져오자
     embed()
     return Response(serializer.data)
 
