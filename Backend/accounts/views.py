@@ -57,24 +57,45 @@ from django.views.decorators.http import require_POST
 from IPython import embed
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.views.decorators.csrf import csrf_exempt
+from .models import *
+from .serializers import *
 
 
-@api_view(['POST'])
+# POST
+@csrf_exempt
 def save_receipt(requests):
+    # 영수증 큰 거 하나 저장
     data = {
         'name': 'hi', 
         'id':'id'
      }
+     # 이걸로 
     return JsonResponse(data)
 
 
-@api_view(['POST'])
+# POST
+@csrf_exempt
 def save_expenditure(requests):
+    # 상세 항목 저장
     pass
 
 
-@api_view(['GET'])
-def get_receipts(requests):
-    data = {'name':'hi', 
-     'id':'id'}
-    return JsonResponse(data)
+# GET
+@api_view(('GET',))
+def get_schedule(request, pk):
+    schedule = Schedule.objects.all().filter(pk=pk)
+    serializer = ScheduleDetailSerializer(schedule, many=True)
+    # 여기에 해당하는 모든 영수증을 가져온 뒤, 거기에 해당하는 모든 상세 항목을 가져오자
+    embed()
+    return Response(serializer.data)
+
+
+# GET
+@api_view(('GET',))
+def get_receipts(requests, pk):
+    receipt = Receipt.objects.all().filter(pk=pk)
+    serializer = ReceiptDetialSerializer(receipt, many=True)
+    return Response(serializer.data)
+
+
