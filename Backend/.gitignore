@@ -131,7 +131,7 @@ dmypy.json
 .history
 
 # model save file
-.pth
+*.pth
 
 # End of https://www.gitignore.io/api/django,visualstudiocode
 
