@@ -88,11 +88,11 @@ const Main = () => {
   const getImgRequest = async () => {
     try {
       const formData = new FormData();
-      // formData.append('file', imgFile);
+      formData.append('file', imgFile);
       formData.append('imgBase64', imgBase64);
-      // formData.append('country', country);
+      formData.append('country', country);
       return await axios.post(
-        'http://10.83.36.198:3000/accounts/v1/receipt/',
+        'http://10.83.32.154:3000/accounts/v1/receipt/',
         formData,
         {
           headers: {
@@ -109,7 +109,10 @@ const Main = () => {
     const res = await getImgRequest();
     console.log(res);
     if (country) {
-      history.push({ pathname: '/Translate', state: { imgBase64: imgBase64 } });
+      history.push({
+        pathname: '/Translate',
+        state: { imgBase64: imgBase64, translateData: res.data },
+      });
     } else {
       setOpenSnackbar(true);
     }
