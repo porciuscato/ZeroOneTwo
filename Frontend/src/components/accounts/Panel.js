@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
-import {
-  Typography,
-  ListItem,
-  Collapse,
-  List,
-  Divider,
-} from '@material-ui/core';
+import { Typography, ListItem, Collapse, List } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
-const Panel = () => {
+const Panel = props => {
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {
     setOpen(!open);
   };
+  console.log(props);
 
   return (
     <>
@@ -27,7 +22,7 @@ const Panel = () => {
             marginLeft: '12px',
           }}
         >
-          상호명
+          {props.item.place_origin}
         </Typography>
         <Typography
           style={{
@@ -37,7 +32,7 @@ const Panel = () => {
             marginRight: '144px',
           }}
         >
-          금액
+          $ {props.item.total}
         </Typography>
         <Typography
           style={{
@@ -47,42 +42,47 @@ const Panel = () => {
             marginRight: '48px',
           }}
         >
-          날짜
+          {/* {props.item.date.split('T')[0].split('0-')[1]} */}
         </Typography>
-        <AddIcon
-          style={{
-            position: 'absolute',
-            right: '4px',
-            top: '12px',
-            marginRight: '12px',
-          }}
-        />
+        {props.item.expenditure_set.length === 0 ? null : (
+          <AddIcon
+            style={{
+              position: 'absolute',
+              right: '4px',
+              top: '12px',
+              marginRight: '12px',
+            }}
+          />
+        )}
       </ListItem>
+
       <Collapse in={open}>
-        <List component="div">
-          <ListItem style={{ marginBottom: '8px' }}>
-            <Typography
-              style={{
-                position: 'absolute',
-                left: '4px',
-                top: '12px',
-                marginLeft: '24px',
-              }}
-            >
-              품목
-            </Typography>
-            <Typography
-              style={{
-                position: 'absolute',
-                right: '4px',
-                top: '12px',
-                marginRight: '144px',
-              }}
-            >
-              금액
-            </Typography>
-          </ListItem>
-        </List>
+        {props.item.expenditure_set.map(item => (
+          <List component="div">
+            <ListItem style={{ marginBottom: '8px' }}>
+              <Typography
+                style={{
+                  position: 'absolute',
+                  left: '4px',
+                  top: '12px',
+                  marginLeft: '24px',
+                }}
+              >
+                {item.item_trans}
+              </Typography>
+              <Typography
+                style={{
+                  position: 'absolute',
+                  right: '4px',
+                  top: '12px',
+                  marginRight: '144px',
+                }}
+              >
+                $ {item.price}
+              </Typography>
+            </ListItem>
+          </List>
+        ))}
       </Collapse>
     </>
   );

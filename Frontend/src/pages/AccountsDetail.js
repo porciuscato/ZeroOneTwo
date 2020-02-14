@@ -20,6 +20,7 @@ import { XYPlot, ArcSeries } from 'react-vis';
 import './AccountsDetail.scss';
 import Panel from '../components/accounts/Panel';
 import axios from 'axios';
+import moment from 'moment';
 
 const AccountsDetail = props => {
   const myData = [
@@ -72,6 +73,8 @@ const AccountsDetail = props => {
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
   const [selectedDate, setSelectedDate] = useState('2019-12-09');
   const [country, setCounty] = useState('');
+  const [scheduleName, setScheduleName] = useState('');
+  const [receiptSet, setReceiptSet] = useState([]);
 
   const handleCloseExchangeDialog = () => {
     setOpenExchangeDialog(false);
@@ -81,20 +84,23 @@ const AccountsDetail = props => {
     setCounty(event.target.value);
   };
 
-  // const getExchangeRequest = async () => {
-  //   try {
-  //     return await axios.get(
-  //       'https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=CQJZGTj2RAQYrW61ldyW2PYU4MPhBzKM&searchdate=20180102&data=AP01',
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  const getExchangeRequest = async () => {
+    try {
+      return await axios.get(
+        `http://10.83.32.154:3000/naver/rate/${moment(selectedDate).format(
+          'YYYYMMDD',
+        )}/usa`,
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  // const getExchange = async () => {
-  //   const resData = await getExchangeRequest();
-  //   console.log(resData);
-  // };
+  const getExchange = async () => {
+    const resData = await getExchangeRequest();
+    console.log(resData);
+    setOpenExchangeDialog(false);
+  };
 
   const getReceiptsRequest = async () => {
     try {
@@ -108,7 +114,9 @@ const AccountsDetail = props => {
 
   const getReceipts = async () => {
     const rcpData = await getReceiptsRequest();
-    console.log(rcpData);
+    console.log(rcpData.data[0]);
+    setScheduleName(rcpData.data[0].schedule_name);
+    setReceiptSet(rcpData.data[0].receipt_set);
   };
 
   useEffect(() => {
@@ -140,7 +148,7 @@ const AccountsDetail = props => {
           style={{ display: 'flex' }}
         >
           <Grid item style={{ display: 'inline-block' }}>
-            <Typography variant="h3">2019 겨울 여행</Typography>
+            <Typography variant="h3">{scheduleName}</Typography>
           </Grid>
           <Grid item style={{ display: 'inline-block' }}>
             <Typography variant="h6">19/12/09</Typography>
@@ -159,17 +167,18 @@ const AccountsDetail = props => {
         </Grid>
         <Divider />
 
-        <Panel />
-        <Panel />
+        {receiptSet.map(item => (
+          <Panel item={item} />
+        ))}
 
-        <XYPlot xDomain={[-5, 5]} yDomain={[-5, 5]} width={300} height={300}>
+        {/* <XYPlot xDomain={[-5, 5]} yDomain={[-5, 5]} width={300} height={300}>
           <ArcSeries
             data={myData}
             colorDomain={[0, 1, 6]}
             colorRange={['#fff', 'pink', 'blue']}
             colorType="linear"
           />
-        </XYPlot>
+        </XYPlot> */}
       </div>
       <Dialog
         open={openExchangeDialog}
@@ -207,7 +216,12 @@ const AccountsDetail = props => {
           <Button onClick={handleCloseExchangeDialog} color="primary">
             취소
           </Button>
-          <Button onClick={handleCloseExchangeDialog} color="primary">
+          <Button
+            onClick={() => {
+              getExchange();
+            }}
+            color="primary"
+          >
             수정
           </Button>
         </DialogActions>
