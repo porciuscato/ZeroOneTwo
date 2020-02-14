@@ -1,4 +1,3 @@
-# import secret
 import os
 import sys
 import urllib.request
@@ -7,8 +6,6 @@ import requests
 from IPython import embed
 # OCR API 요청
 def image_NAVER_AI(img_64):
-    with open('test.txt', 'w', encoding='utf-8-sig') as f:
-        f.write(img_64)
     comma_idx = img_64.find(',')
     img_64 = img_64[comma_idx+1:]
     TEMPLATE = {
@@ -25,13 +22,13 @@ def image_NAVER_AI(img_64):
             "version": "V1"
     }
     transmit = json.dumps(TEMPLATE)
-    client_secret = 'anZ3ZkRQU05CR2VHa1VjSVdmRGFoeFdzUUJyS0h1WnU='
+    client_secret = 'aUtKVFpZS3NQVFhDU3RZSUJPVEttZnZubHNzWFJjcks='
     data = transmit
-    url = "https://4ezihkm520.apigw.ntruss.com/custom/v1/916/682ff265d8365600d74e4adcca80dc6a59c41e236784633af6c3c37438030d33/infer"
+    url = "https://4ezihkm520.apigw.ntruss.com/custom/v1/927/f6002cbceb8c0327d974714b8f7a4ba28e25f0b7cbe216a719c35ced1fe9647f/infer"
     request = urllib.request.Request(url)
     request.add_header("X-OCR-SECRET",client_secret)
     request.add_header("Content-Type", "application/json")
-    # embed()
+    # requests.get(request)
     response = urllib.request.urlopen(request, data=data.encode("utf-8"))
     rescode = response.getcode()
     if(rescode==200):
@@ -39,6 +36,7 @@ def image_NAVER_AI(img_64):
         fix = response_body.decode('utf-8')
         fix = json.loads(fix)
         # print(fix)
+        
         # 결과 값 후 처리
         total = 0
         total_words = ['Total', 'total', 'TOTAL', 'AMOUNT', 'Amount', 'AMT', 'Payment', 'payment']
@@ -56,69 +54,112 @@ def image_NAVER_AI(img_64):
                         real.append(k['inferText'])
                         if '$' in k['inferText'] or '.' in k['inferText'] or '・' in k['inferText'] or k['inferText'][-1] == 'T' or k['inferText'][-1] == '0':
                             empty.append(k['inferText'])
+
     # 후 처리 한 결과 값과 그렇지 않은 결과 값의 차이 비교
         # print(real)
         if len(real) - len(empty) > 6:
             print('안 들어온 값이 많습니다. 계속 진행하시겠습니까?')
+
     # Key 값 후 처리    
         receipt = {}
-        receipt[empty[0]] = empty[1]
+        receipt[empty[0]] = {'value': empty[1]}
         for i in range(2, len(empty)):
             if list(empty[i].split()[0])[0] in nums:
                 s = empty[i].split()[0][1:]
                 if list(empty[i].split()[-1])[-1] in nums or list(empty[i].split()[-1])[-1] == 'T':
-                    receipt[s + ' '.join(empty[i].split()[1:-1])] = empty[i].split()[-1]
+                    receipt[s + ' '.join(empty[i].split()[1:-1])] = {'value': empty[i].split()[-1]}
             else:
                 if list(empty[i].split()[-1])[-1] in nums or list(empty[i].split()[-1])[-1] == 'T':
-                    receipt[' '.join(empty[i].split()[0:-1])] = empty[i].split()[-1]
-        print(receipt) 
+                    receipt[' '.join(empty[i].split()[0:-1])] = {'value': empty[i].split()[-1]}
+
+
     else:
         print("Error Code:" + rescode)
+
+
+    # print(receipt)
+
+
     # 파파고 번역 시작
+
     maerong = []
-    receipt_trans = {}
-    client_id = "NYfX1D8nruuEQC6_20Dk" # 개발자센터에서 발급받은 Client ID 값
-    client_secret = "fN0cDTYHh8" # 개발자센터에서 발급받은 Client Secret 값
+
+    client_id = "AUXR0gR5NNTjtmnyWdDD" # 개발자센터에서 발급받은 Client ID 값
+    client_secret = "u6hHsOvN5g" # 개발자센터에서 발급받은 Client Secret 값
     for key, val in receipt.items():
         if key == '':
-            key = 'None'
-        if val == '':
-            val = 'None'
-        if key == '3:33TOTAL':
-            key = 'TOTAL'
+            continue
         encText = urllib.parse.quote(key)
-        encText2 = urllib.parse.quote(val)
         data = "source=en&target=ko&text=" + encText
-        data2 = "source=en&target=ko&text=" + encText2
         url = "https://openapi.naver.com/v1/papago/n2mt"
         request = urllib.request.Request(url)
         request.add_header("X-Naver-Client-Id",client_id)
         request.add_header("X-Naver-Client-Secret",client_secret)
         response = urllib.request.urlopen(request, data=data.encode("utf-8"))
-        response2 = urllib.request.urlopen(request, data=data2.encode("utf-8"))
         rescode = response.getcode()
-        rescode2 = response2.getcode()
         if(rescode==200):
             response_body = response.read()
             fix2 = response_body.decode('utf-8')
             fix2 = json.loads(fix2)
             translated = fix2["message"]["result"]["translatedText"]
+            
             # 예외 처리 
             if translated == '바꾸다':
                 translated = '거스름 돈'
+
             if translated == 'AMT':
                 translated = '총'
+            
             if translated == '1/015:57p전체:':
                 translated = '총'
             if translated == '지불':
                 translated = '총'
-        if(rescode2==200):
-            response_body2 = response2.read()
-            fix3 = response_body2.decode('utf-8')
-            fix3 = json.loads(fix3)
-            translated1 = fix3["message"]["result"]["translatedText"]
-            receipt_trans[translated] = translated1
-        else:
-            print("Error Code:" + rescode)
-    return (receipt, receipt_trans)
-    # print(receipt_trans)
+            if translated == '합계:':
+                translated = '총'
+            if translated == '전체:':
+                translated = '총'
+            
+            if key == '3:33TOTAL':
+                translated = '총'
+            
+            receipt[key]['ko'] = translated
+            
+
+    # print(receipt)
+
+    result = {
+        
+    }
+
+    useless = ['Cash', 'Change', 'SF * Healthy Surcharge', 'Subtotal', 'Net TTL', '30VAT TTL', 'Credit/Debit', 'Tax', 'Sub-Total', '%GST', 'VISA', 'SUBTOTAL', 'TAX:', 'SUBTOTAL:', 'Subtotal:', 'Tax:']
+    result['items'] = []
+    for k, v in receipt.items():
+        if k == 'place':
+            result['place']= receipt[k]['value']
+
+        elif k == '':
+            continue
+
+        elif v['ko'] == '총':
+            result['total_price'] = receipt[k]['value']
+
+        elif k == '3:33TOTAL':
+            result['total_price'] = receipt[k]['value']
+
+        elif k not in useless:
+            bb = {}
+            bb['ko'] = v['ko']
+            if '$' in v['value']:
+                v['value'] = v['value'].replace("$", "")
+                v['value'] = float(v['value'])
+                bb['value'] = v['value']
+            else:
+                bb['value'] = float(v['value'])
+            result['items'].append(bb)
+        
+
+
+    if '$' in result['total_price']:
+        result['total_price'] = float(result['total_price'].replace("$", ""))
+
+    return result
