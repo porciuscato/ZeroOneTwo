@@ -19,7 +19,7 @@ class Schedule(models.Model):
 
 
 class Receipt(models.Model):
-    schedule_name = models.ForeignKey(Schedule, on_delete=models.CASCADE)
+    schedule_name = models.ForeignKey(Schedule, on_delete=models.CASCADE, blank=True, null=True)
     place_origin = models.CharField(max_length=50, blank=True, null=True)
     place_trans = models.CharField(max_length=50, blank=True, null=True)
     address_origin = models.CharField(max_length=100, blank=True, null=True)

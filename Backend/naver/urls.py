@@ -11,5 +11,6 @@ app_name = 'naver'
 
 urlpatterns = [
     path('v1/images/', views.image_check), 
-    # path('exchange/', views.exchange),
+    # path('exchange/<int:mx>/', views.exchange),
+    path('rate/<date>/<country>/', views.get_rate),
  ]
