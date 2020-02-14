@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Grid, TextField } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
-const TranslateItem = () => {
+const TranslateItem = props => {
   const [isAlive, setIsAlive] = useState(true);
 
   return (
@@ -16,10 +16,10 @@ const TranslateItem = () => {
           style={{ display: 'flex', width: 'inherit' }}
         >
           <Grid item style={{ display: 'inline-block' }}>
-            <TextField id="standard-basic" label="상품명" />
+            <TextField id="standard-basic" label="상품명" value={props.ko} />
           </Grid>
           <Grid item style={{ display: 'inline-block' }}>
-            <TextField id="standard-basic" label="가격" />
+            <TextField id="standard-basic" label="가격" value={props.value} />
           </Grid>
           <Grid
             item
