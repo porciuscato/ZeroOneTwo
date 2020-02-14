@@ -21,7 +21,7 @@ import './AccountsDetail.scss';
 import Panel from '../components/accounts/Panel';
 import axios from 'axios';
 
-const AccountsDetail = () => {
+const AccountsDetail = props => {
   const myData = [
     {
       angle0: 0,
@@ -68,6 +68,7 @@ const AccountsDetail = () => {
     },
   ];
 
+  const schedulePk = props.location.state.schedulePk;
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
   const [selectedDate, setSelectedDate] = useState('2019-12-09');
   const [country, setCounty] = useState('');
@@ -97,19 +98,22 @@ const AccountsDetail = () => {
 
   const getReceiptsRequest = async () => {
     try {
-      return await axios.get();
+      return await axios.get(
+        `http://10.83.32.154:3000/accounts/v1/schedule/${schedulePk}`,
+      );
     } catch (error) {
       console.log(error);
     }
   };
 
   const getReceipts = async () => {
-    await getReceiptsRequest();
+    const rcpData = await getReceiptsRequest();
+    console.log(rcpData);
   };
 
   useEffect(() => {
     getReceipts();
-  });
+  }, []);
 
   return (
     <>

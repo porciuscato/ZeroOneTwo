@@ -66,7 +66,17 @@ const Translate = props => {
 
   const postReceiptRequest = async () => {
     try {
-      return await axios.post();
+      return await axios.post(
+        `http://10.83.32.154:3000/accounts/v1/receipt/${translateData.id}/`,
+        {
+          schedule_pk: schedule,
+          place_origin: placeOrigin,
+          plcae_trans: '',
+          country: 'usa',
+          total: total,
+          goods: goods,
+        },
+      );
     } catch (error) {
       console.log(error);
     }
@@ -74,7 +84,22 @@ const Translate = props => {
 
   const postReceipt = async () => {
     await postReceiptRequest();
-    history.push('/AccountsDetail');
+    history.push({
+      pathname: '/AccountsDetail',
+      state: { schedulePk: schedule },
+    });
+  };
+
+  const [placeOrigin, setPlaceOrigin] = useState(translateData.place_origin);
+
+  const handleChangePlaceOrigin = event => {
+    setPlaceOrigin(event.target.value);
+  };
+
+  const [total, setTotal] = useState(translateData.total);
+
+  const handleChangeTotal = event => {
+    setTotal(event.target.value);
   };
 
   return (
@@ -117,7 +142,8 @@ const Translate = props => {
             <TextField
               id="standard-basic"
               label="상호명"
-              value={translateData.place_origin}
+              value={placeOrigin}
+              onChange={handleChangePlaceOrigin}
             />
           </Grid>
         </Grid>
@@ -136,12 +162,15 @@ const Translate = props => {
             <TextField
               id="standard-basic"
               label="총액"
-              value={translateData.total}
+              value={total}
+              onChange={handleChangeTotal}
             />
           </Grid>
         </Grid>
 
-        {/* {goods.maps(item => <TranslateItem />)} */}
+        {goods.map(item => (
+          <TranslateItem ko={item.ko} value={item.value} />
+        ))}
 
         {isAdd && <TranslateItem />}
 
