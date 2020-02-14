@@ -6,8 +6,6 @@ import requests
 from IPython import embed
 # OCR API 요청
 def image_NAVER_AI(img_64):
-    with open('test.txt', 'w', encoding='utf-8-sig') as f:
-        f.write(img_64)
     comma_idx = img_64.find(',')
     img_64 = img_64[comma_idx+1:]
     TEMPLATE = {
