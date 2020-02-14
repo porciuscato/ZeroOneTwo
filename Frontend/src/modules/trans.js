@@ -1,4 +1,4 @@
-import { getItems } from "../api/transApi"
+import { getReceipt } from "../api/transApi"
 import { createReducer } from "redux-actions";
 // 액션 타입
 const GET_TRANS = "trans/GET_TRANS";
@@ -7,13 +7,13 @@ const GET_TRANS_FAILURE = "trans/GET_TRANS_FAILURE";
 
 // 액션 객체 생성함수 선언
 
-export const getTrans = (postId) => dispatch => {
+export const getTrans = (file, fType, country) => dispatch => {
   // 먼저, 요청이 시작했다는것을 알립니다
   dispatch({ type: GET_TRANS });
 
   // 요청을 시작합니다
   // 여기서 만든 promise 를 return 해줘야, 나중에 컴포넌트에서 호출 할 때 getPost().then(...) 을 할 수 있습니다
-  return getItems(postId).then(
+  return getReceipt(file, fType, country).then(
     (response) => {
       // 요청이 성공했을경우, 서버 응답내용을 payload 로 설정하여 GET_POST_SUCCESS 액션을 디스패치합니다.
       dispatch({
