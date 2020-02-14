@@ -1,7 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import BaseAppBar from '../components/common/BaseAppBar';
 import Drawar from '../components/common/Drawer';
-import { Typography, Button } from '@material-ui/core';
+import {
+  Typography,
+  Button,
+  Grid,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  DialogTitle,
+  TextField,
+  MenuItem,
+  Divider,
+} from '@material-ui/core';
+import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import '../../node_modules/react-vis/dist/style.css';
 import { XYPlot, ArcSeries } from 'react-vis';
 import './AccountsDetail.scss';
@@ -55,20 +68,48 @@ const AccountsDetail = () => {
     },
   ];
 
-  const getExchangeRequest = async () => {
+  const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('2019-12-09');
+  const [country, setCounty] = useState('');
+
+  const handleCloseExchangeDialog = () => {
+    setOpenExchangeDialog(false);
+  };
+
+  const handleChangeCountry = event => {
+    setCounty(event.target.value);
+  };
+
+  // const getExchangeRequest = async () => {
+  //   try {
+  //     return await axios.get(
+  //       'https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=CQJZGTj2RAQYrW61ldyW2PYU4MPhBzKM&searchdate=20180102&data=AP01',
+  //     );
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // const getExchange = async () => {
+  //   const resData = await getExchangeRequest();
+  //   console.log(resData);
+  // };
+
+  const getReceiptsRequest = async () => {
     try {
-      return await axios.get(
-        'https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=CQJZGTj2RAQYrW61ldyW2PYU4MPhBzKM&searchdate=20180102&data=AP01',
-      );
+      return await axios.get();
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
-  const getExchange = async () => {
-    const resData = await getExchangeRequest();
-    console.log(resData);
+  const getReceipts = async () => {
+    await getReceiptsRequest();
   };
+
+  useEffect(() => {
+    getReceipts();
+  });
 
   return (
     <>
@@ -87,10 +128,32 @@ const AccountsDetail = () => {
           leftIcon={<Drawar />}
         />
 
-        <Typography variatn="h3">무슨 폴더냐 여기는</Typography>
-        <Typography variatn="h6">환율 기준일</Typography>
-        <Typography variatn="h6">환율 나라</Typography>
-        <Button>환율 계산</Button>
+        <Grid
+          containter
+          direction="row"
+          justify="space-around"
+          alignItems="center"
+          style={{ display: 'flex' }}
+        >
+          <Grid item style={{ display: 'inline-block' }}>
+            <Typography variant="h3">2019 겨울 여행</Typography>
+          </Grid>
+          <Grid item style={{ display: 'inline-block' }}>
+            <Typography variant="h6">19/12/09</Typography>
+          </Grid>
+          <Grid item style={{ display: 'inline-block' }}>
+            <Typography variant="h6">미국</Typography>
+          </Grid>
+          <Grid
+            item
+            onClick={() => {
+              setOpenExchangeDialog(true);
+            }}
+          >
+            <Button>환율 계산</Button>
+          </Grid>
+        </Grid>
+        <Divider />
 
         <Panel />
         <Panel />
@@ -104,6 +167,47 @@ const AccountsDetail = () => {
           />
         </XYPlot>
       </div>
+      <Dialog
+        open={openExchangeDialog}
+        onClose={handleCloseExchangeDialog}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle id="form-dialog-title">환율 날짜 변경</DialogTitle>
+        <DialogContent>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker
+              disableToolbar
+              variant="dialog"
+              label="Date"
+              value={selectedDate}
+              onChange={setSelectedDate}
+            />
+          </MuiPickersUtilsProvider>
+          <TextField
+            id="standard-select-currency"
+            select={true}
+            fullWidth
+            label="Country"
+            value={country}
+            onChange={handleChangeCountry}
+          >
+            <MenuItem key="1" value="미국">
+              미국
+            </MenuItem>
+            <MenuItem key="2" value="일본">
+              일본
+            </MenuItem>
+          </TextField>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseExchangeDialog} color="primary">
+            취소
+          </Button>
+          <Button onClick={handleCloseExchangeDialog} color="primary">
+            수정
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

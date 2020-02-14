@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { Typography, ListItem, Collapse, List } from '@material-ui/core';
+import {
+  Typography,
+  ListItem,
+  Collapse,
+  List,
+  Divider,
+} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
 const Panel = () => {
@@ -13,6 +19,7 @@ const Panel = () => {
     <>
       <ListItem onClick={handleClick} style={{ paddingBottom: '24px' }}>
         <Typography
+          variant="h6"
           style={{
             position: 'absolute',
             left: '4px',
