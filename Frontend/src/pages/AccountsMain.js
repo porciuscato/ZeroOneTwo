@@ -4,8 +4,10 @@ import Drawar from '../components/common/Drawer';
 import axios from 'axios';
 import { MenuItem } from '@material-ui/core';
 import CardTravelIcon from '@material-ui/icons/CardTravel';
+import { useHistory } from 'react-router-dom';
 
 const AccountsMain = () => {
+  const history = useHistory();
   const [schedules, setSchedules] = useState([]);
 
   const getSchedulesRequest = async () => {
@@ -47,6 +49,12 @@ const AccountsMain = () => {
             key={option.id}
             value={option.id}
             style={{ display: 'flex', justifyContent: 'space-around' }}
+            onClick={() => {
+              history.push({
+                pathname: '/AccountsDetail',
+                state: { schedulePk: option.id },
+              });
+            }}
           >
             <CardTravelIcon />
             {option.schedule_name}

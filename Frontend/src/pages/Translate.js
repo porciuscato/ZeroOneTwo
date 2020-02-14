@@ -156,7 +156,7 @@ const Translate = props => {
           style={{ display: 'flex', width: 'inherit' }}
         >
           <Grid item style={{ display: 'inline-block' }}>
-            <Typography>총액</Typography>
+            <Typography>총액($)</Typography>
           </Grid>
           <Grid item style={{ display: 'inline-block' }}>
             <TextField
