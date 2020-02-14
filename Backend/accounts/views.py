@@ -59,7 +59,7 @@ from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
 from .serializers import *
-from naver.classify import is_receipt
+# from naver.classify import is_receipt
 from .naverAPI import image_NAVER_AI
 
 # POST
@@ -78,44 +78,98 @@ def save_receipt(requests):
         }
         return JsonResponse(data)
     else:
-        img_base64 = requests.POST['imgBase64']
-        result = image_NAVER_AI(img_base64)
-        en = result[0]
-        ko = result[1]
-        result = {
-            '장소': {
-                'en': en.get('place'),
-                'ko': ko.get('장소'),
-            },
-            '총계': ko.get('총'),
-            '픔목': {
-                1 : {
-                    'en' : '',
-                    'ko' : '',
-                    'price': '',
-                }
-            }
-        }
+        img_base64 = requests.POST.get('imgBase64')
+        # result = image_NAVER_AI(img_base64)
+        # en = result[0]
+        # ko = result[1]
+        # result = {
+        #     '장소': {
+        #         'en': en.get('place'),
+        #         'ko': ko.get('장소'),
+        #     },
+        #     '총계': ko.get('총'),
+        #     '픔목': {
+        #         1 : {
+        #             'en' : '',
+        #             'ko' : '',
+        #             'price': '',
+        #         }
+        #     }
+        # }
         print('arrive')
         # embed()
         # 사진 처리한 결과가 참이면 OCR과 파파고를 돌려서 결과를 얻는다.
-        # 나온 결과를 보내준다.
+        # 나온 결과를 보내준다. # goods에 품목들을 보내준다.
         data = {
-            'name': 'hi', 
-            'id':'id'
+            'place_origin' : '',
+            'plcae_trans' : '',
+            'country' : 'usa',
+            'total' : '',
+            'goods' : {
+                'en1' : {
+                    'value' : 15,
+                    'ko' : 'ko1',
+                },
+                'en2' : {
+                    'value' : 22,
+                    'ko' : 'ko2',
+                },
+            }
         }
         # 보내주기 전에 영수증을 저장하고 그 영수증의 pk 값을 보내준다.
+        # 반드시 영수증 PK도 같이 보내줘야 한다.
+        receipt = Receipt.obejcts.create(
+            place_origin = '',
+            place_trans = '',
+            country = 'usa',
+            total = '',
+        )
+        receipt.save()
+        # receipt serilalizer를 보내자
+        serializer = ReceiptSerializer(receipt)
+        objs = Receipt.objects.all().filter(id=receipt)
+        data['id'] = objs[0].id
         return JsonResponse(data)
+
+
+# 해당하는 결과가 모두 형한테 넘어감
+# 그러면 형은 하나하나 저장. 항목을 저장 -> 그런데 이건 진짜 저장이 아니라, 임시 저장
+# 영수증을 저장하면 그때 저장하는 것
+
 
 
 # POST
 @csrf_exempt
-def save_expenditure(requests):
+def decide_receipt(request, pk): # 영수증을 저장
+    receipt = Receipt.objects.filter(pk=pk)[0]
+    schedule = request.POST # param 값이 넘어오면 그걸 전해준다.
+    receipt.schedule_name = schedule
+    result = {
+        'msg': True,
+    }
+    return JsonResponse(result)
+
+
+# POST
+@csrf_exempt
+def save_expenditure(requests, pk):
     # 상세 항목 저장
     # 항목 하나하나 날라오면 그걸 저장
+    params = requests.POST
+    receipt = Receipt.objects.filter(id=pk)[0]
+    expenditure = Expenditure.objects.create(
+        receipt = receipt,
+        item_origin = '',
+        item_trans = '',
+        price = '',
+    )
+    expenditure.save()
     # 근데 만약 해당하는 객체가 없으면 만들어야 함
     # 하나하나를 저장해준다.
-    pass
+    result = {
+        'msg' : True
+    }
+    return JsonResponse(result)
 
 
 # GET
